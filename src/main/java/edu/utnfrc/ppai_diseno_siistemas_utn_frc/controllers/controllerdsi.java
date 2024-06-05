@@ -48,13 +48,44 @@ public class controllerdsi {
 	    return modelAndView;
     }
 	
-	@PostMapping("/TomarFormasValidacion")
-	public ModelAndView tomarSeleccionFormasDeVisualizacion(@RequestParam("resenas") String valorSelect) {
+	@PostMapping("/TomarSeleccionTipoResena")
+	public ModelAndView tomarSeleccionTipoResena(@RequestParam("resenas") String valorSelect) {
 		ModelAndView modelAndView = new ModelAndView("generarreporte");
 		
-		String enabled = "3";
+		String enabled = "0";
+		
+		if (valorSelect.compareToIgnoreCase("sommelier") != 0) {
+	        modelAndView.addObject("error2", "Por momentos solo podemos generar rese&ntilde;as de tipo sommelier");
+	        enabled = "2";
+	    } else {
+	    	enabled = "3";
+	    }			
+		
 		modelAndView.addObject("enabled", enabled);
 		
 		return modelAndView;
+	}
+	
+	@PostMapping("/TomarSeleccionFormaVisualizacion")
+	public ModelAndView tomarSeleccionFormaVisualizacion(@RequestParam("tipovisualizacion") String valorSelect) {
+		ModelAndView modelAndView = new ModelAndView("generarreporte");
+		
+		String enabled = "0";
+		
+		if (valorSelect.compareToIgnoreCase("excel") != 0) {
+	        modelAndView.addObject("error3", "Por momentos solo podemos generar reportes en formato Excel");
+	        enabled = "3";
+	    } else {
+	    	enabled = "4";
+	    }			
+		
+		modelAndView.addObject("enabled", enabled);
+		
+		return modelAndView;
+	}
+	
+	@GetMapping("/TomarConfirmacionGeneracionReporte")
+	public String tomarConfirmacionGeneracionReporte() {	
+		return "excel";
 	}
 }

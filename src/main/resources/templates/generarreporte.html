@@ -70,8 +70,9 @@
 		</div>		
 		
 		
-		<div class="container" th:if="${enabled == '2' OR enabled == '3'}">
-			<form th:action="@{/TomarFormasValidacion}" method="post">	
+		<div class="container" th:if="${enabled == '2' OR enabled == '3' OR enabled == '4'}">
+			<form th:action="@{/TomarSeleccionTipoResena}" method="post">	
+				<div class="container">
 				<table class="table">
 					<tr>
 						<td><label class="form-label text-end">Selecciona el tipo de rese&ntilde;a:</label></td>
@@ -87,12 +88,18 @@
 						</td>
 						<td th:if="${enabled == '2'}"><input type="submit" class="btn btn-primary" value="Filtrar" /></td>
 					</tr>
-				</table>		
+				</table>
+				</div>		
+				<div th:if="${error2}" class="alert alert-warning" role="alert">
+					<span th:text="${error2}"></span>
+				</div>
 			</form>			
 		</div>
 		
 		
-		<div class="container" th:if="${enabled == '3'}">
+		<div class="container" th:if="${enabled == '3' OR enabled == '4'}">
+			<form th:action="@{/TomarSeleccionFormaVisualizacion}" method="post">	
+			<div class="container">
 			<table class="table">
 				<tr>
 					<td><label class="form-label text-end">Selecciona el tipo de visualizaci&oacute;n:</label></td>
@@ -105,16 +112,25 @@
 					</td>
 					<td th:if="${enabled == '3'}"><input type="submit" class="btn btn-primary" value="Filtrar" /></td>
 				</tr>
-			</table>	
+			</table>
+			</div>	
+			<div th:if="${error3}" class="alert alert-warning" role="alert">
+				<span th:text="${error3}"></span>
+			</div>
+			</form>	
 		</div>		
 		
-		<div class="container" th:if="${enabled == '3'}">
+		<div class="container" th:if="${enabled == '4'}">
+			<form th:action="@{/TomarConfirmacionGeneracionReporte}" method="get">	
+			<div class="container">
 			<table class="table">
 				<tr>
 					<td><label class="form-label text-end">&#191;Confirma generaci&oacute;n&#63;:</label></td>					
 					<td><input type="submit" class="btn btn-success" value="Confirmar"/></td>
 				</tr>
 			</table>	
+			</div>
+			</form>	
 		</div>
 	</body>
 	
