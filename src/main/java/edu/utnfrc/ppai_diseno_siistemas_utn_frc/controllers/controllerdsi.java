@@ -2,8 +2,10 @@ package edu.utnfrc.ppai_diseno_siistemas_utn_frc.controllers;
 
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 import edu.utnfrc.ppai_diseno_siistemas_utn_frc.domain.boundary.PantallaGenerarReporte;
+import edu.utnfrc.ppai_diseno_siistemas_utn_frc.domain.entidad.Vino;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -123,8 +125,11 @@ public class controllerdsi {
 	}
 	
 	@GetMapping("/TomarConfirmacionGeneracionReporte")
-	public String tomarConfirmacionGeneracionReporte(@RequestParam(value = "valor", required = true, defaultValue = "true") boolean valor) {
-		pantallaGenerarReporte.confirmarGeneracionReporte(valor);
+	public String tomarConfirmacionGeneracionReporte(@RequestParam(value = "valor", required = true, defaultValue = "true") boolean valor, Model model) {
+		ArrayList<Vino> lista =pantallaGenerarReporte.confirmarGeneracionReporte(valor);
+
+		System.out.println(lista);
+		model.addAttribute("lista", lista);
 		return "excel";
 	}
 }

@@ -1,5 +1,6 @@
 package edu.utnfrc.ppai_diseno_siistemas_utn_frc.domain.boundary;
 
+import edu.utnfrc.ppai_diseno_siistemas_utn_frc.domain.entidad.Vino;
 import edu.utnfrc.ppai_diseno_siistemas_utn_frc.domain.gestor.GestorGenerarReporte;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,7 +9,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-
+import java.util.ArrayList;
 import java.time.LocalDate;
 
 @Data
@@ -78,9 +79,10 @@ public class PantallaGenerarReporte {
 
     public void solicitarConfirmacionGeneracionReporte() {}
 
-    public void confirmarGeneracionReporte(boolean valor) {
+    public ArrayList<Vino> confirmarGeneracionReporte(boolean valor) {
         this.btnConfirmacion = valor;
-        this.gestorGenerarReporte.tomarConfirmacionGeneracionReporte(this.btnConfirmacion);
+        ArrayList<Vino> lista = this.gestorGenerarReporte.tomarConfirmacionGeneracionReporte(this.btnConfirmacion);
+        return lista;
     }
 
     public void informarGeneracionExitosa() {}

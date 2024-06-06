@@ -116,13 +116,16 @@ public class GestorGenerarReporte {
         this.pantallaGenerarReporte.solicitarConfirmacionGeneracionReporte();
     }
 
-    public void tomarConfirmacionGeneracionReporte(boolean valor) {
+    public ArrayList<Vino> tomarConfirmacionGeneracionReporte(boolean valor) {
+        ArrayList<Vino> lista = null;
         if (valor) {
             log.info("Confirmacion = {}", true);
-            buscarVinosConReseñaEnPeriodo();
+            lista = buscarVinosConReseñaEnPeriodo();
         }
+
+        return lista;
     }
-    public void buscarVinosConReseñaEnPeriodo() {
+    public ArrayList<Vino> buscarVinosConReseñaEnPeriodo() {
 
         //List de vinos (pre cargados)
         List<Vino> vinoList = getResult();
@@ -149,17 +152,19 @@ public class GestorGenerarReporte {
         }).filter(Objects::nonNull).toList());
 
         //invocamos al método calcular ranking.
-        this.calcularRanking(this.vino);
+        ArrayList<Vino> lista = this.calcularRanking(this.vino);
+        return lista;
     }
 
-    public void calcularRanking(List<Vino> vino) {
+    public ArrayList<Vino> calcularRanking(List<Vino> vino) {
         vino.sort(Comparator.comparing(GestorGenerarReporte::apply).reversed());
-        this.generarExcel10MejoresVinos(vino);
+        ArrayList<Vino> lista = this.generarExcel10MejoresVinos(vino);
+        return lista;
     }
 
-    public void generarExcel10MejoresVinos(List<Vino> vino) {
+    public ArrayList<Vino> generarExcel10MejoresVinos(List<Vino> vino) {
         Map<String, Object> mapita;
-        List<Vino> vinoList = new ArrayList<>();
+        ArrayList<Vino> vinoList = new ArrayList<>();
         if (!vino.isEmpty()) {
             for (int i = 0; vinoList.size() < 10; i++) {
                 Vino getVino = vino.get(i);
@@ -170,9 +175,12 @@ public class GestorGenerarReporte {
                 this.varietal.addAll(getVino.getVarietal());
                 vinoList.add(getVino);
             }
-            //generar el excel (Todos los datos que tiene el gestor).
+
+            // System.out.println(GestorGenerarReporte.this.toString());
         }  else {
             log.error("List vinos is empty - {}", vino);
         }
+
+        return vinoList;
     }
 }
