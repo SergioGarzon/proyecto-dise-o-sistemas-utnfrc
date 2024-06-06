@@ -129,7 +129,6 @@ public class controllerdsi {
 	public String tomarConfirmacionGeneracionReporte(@RequestParam(value = "valor", required = true, defaultValue = "true") boolean valor, Model model) {
 		List<Vino> lista =pantallaGenerarReporte.confirmarGeneracionReporte(valor);
 
-		System.out.println(lista);
 		model.addAttribute("lista", lista);
 		return "excel";
 	}
