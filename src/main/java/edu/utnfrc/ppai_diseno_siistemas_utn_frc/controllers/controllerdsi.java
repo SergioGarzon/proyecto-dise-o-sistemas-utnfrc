@@ -2,11 +2,13 @@ package edu.utnfrc.ppai_diseno_siistemas_utn_frc.controllers;
 
 
 import java.time.LocalDate;
+
+import edu.utnfrc.ppai_diseno_siistemas_utn_frc.domain.boundary.PantallaGenerarReporte;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import static edu.utnfrc.ppai_diseno_siistemas_utn_frc.util.Constants.*;
@@ -14,6 +16,9 @@ import static edu.utnfrc.ppai_diseno_siistemas_utn_frc.util.Constants.*;
 
 @Controller
 public class controllerdsi {
+
+	@Autowired
+	private PantallaGenerarReporte pantallaGenerarReporte;
 	
 	@GetMapping("/proyecto")
 	public String start() {
@@ -36,7 +41,7 @@ public class controllerdsi {
     public ModelAndView validarPeriodo(@RequestParam("fechaDesde") LocalDate fechaDesde,
 									   @RequestParam("fechaHasta") LocalDate fechaHasta,
 									   Model model) {
-		
+
 		ModelAndView modelAndView = new ModelAndView(GENERAR_REPORTE);
 		String enabled;
 		
@@ -45,6 +50,8 @@ public class controllerdsi {
 	        enabled = "1";
 	    } else {
 	    	enabled = "2";
+			pantallaGenerarReporte.tomarSeleccionFechaDesde(fechaDesde);
+			pantallaGenerarReporte.tomarSeleccionFechaHasta(fechaHasta);
 	    }	
 	    
 		modelAndView.addObject(ENABLED, enabled);
@@ -63,6 +70,7 @@ public class controllerdsi {
 	        enabled = "2";
 	    } else {
 	    	enabled = "3";
+			pantallaGenerarReporte.tomarSeleccionTipoReseña(valorSelect);
 	    }			
 		
 		modelAndView.addObject(ENABLED, enabled);
@@ -81,6 +89,7 @@ public class controllerdsi {
 	        enabled = "3";
 	    } else {
 	    	enabled = "4";
+			pantallaGenerarReporte.tomarSeleccionFormasVisualizacion(valorSelect);
 	    }			
 		
 		modelAndView.addObject(ENABLED, enabled);
@@ -89,7 +98,8 @@ public class controllerdsi {
 	}
 	
 	@GetMapping("/TomarConfirmacionGeneracionReporte")
-	public String tomarConfirmacionGeneracionReporte() {	
+	public String tomarConfirmacionGeneracionReporte(@RequestParam(value = "valor", required = true, defaultValue = "true") boolean valor) {
+		pantallaGenerarReporte.confirmarGeneracionReporte(valor);
 		return "excel";
 	}
 }
