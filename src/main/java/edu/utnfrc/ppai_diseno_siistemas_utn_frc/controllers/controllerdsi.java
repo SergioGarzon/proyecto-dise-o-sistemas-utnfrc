@@ -31,6 +31,8 @@ public class controllerdsi {
 	@GetMapping("/GenerarReporte")
 	public String habilitarVentana(Model model) {		
 		String enabled = "1";
+
+		model.addAttribute("fechaDesdeOriginal", LocalDate.now());
         model.addAttribute(ENABLED, enabled);
 		return GENERAR_REPORTE;
 	}
