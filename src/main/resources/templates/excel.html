@@ -34,41 +34,37 @@
 		</div>
 		
 		<br /><br /><br />
-		
-		<div>
+
+		<h2>Ranking de vinos</h2>
+
+		<br /><br />
+
+		<div class="container-fluid">
 			<table class="table table-dark">
 			  <thead>
 			    <tr>
-			      <th scope="col">#</th>
-			      <th scope="col">First</th>
-			      <th scope="col">Last</th>
-			      <th scope="col">Handle</th>
+			      <th scope="col">Nombre</th>
+				  <th scope="col">Calificaci&oacute;n sommelier</th>
+				  <th scope="col">Precio sugerido</th>
+				  <th scope="col">Nombre Bodega</th>
+				  <th scope="col">Regi&oacute;n Vitivinicola</th>
+				  <th scope="col">Pa&iacute;s</th>
 			    </tr>
 			  </thead>
 			  <tbody>
-			    <tr>
-			      <th scope="row">1</th>
-			      <td>Mark</td>
-			      <td>Otto</td>
-			      <td>@mdo</td>
-			    </tr>
-			    <tr>
-			      <th scope="row">2</th>
-			      <td>Jacob</td>
-			      <td>Thornton</td>
-			      <td>@fat</td>
-			    </tr>
-			    <tr>
-			      <th scope="row">3</th>
-			      <td>Larry</td>
-			      <td>the Bird</td>
-			      <td>@twitter</td>
+			    <tr th:each="list : ${lista}">
+					<td th:text="${list.nombre}"></td>
+					<td th:text="${list.reseña[0].puntaje}"></td>
+					<td th:text="${list.precioArs}"></td>
+				    <td th:text="${list.bodega.nombre}"></td>
+				    <td th:text="${list.bodega.region.nombre}"></td>
+					<td th:text="${list.bodega.region.provincia.pais.nombre}"></td>
+
 			    </tr>
 			  </tbody>
 			</table>
 		</div>
-					
-		
+
 		
 	</body>
 	

@@ -2,11 +2,15 @@ package edu.utnfrc.ppai_diseno_siistemas_utn_frc.controllers;
 
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+
+import edu.utnfrc.ppai_diseno_siistemas_utn_frc.domain.boundary.PantallaGenerarReporte;
+import edu.utnfrc.ppai_diseno_siistemas_utn_frc.domain.entidad.Vino;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import static edu.utnfrc.ppai_diseno_siistemas_utn_frc.util.Constants.*;
@@ -14,6 +18,12 @@ import static edu.utnfrc.ppai_diseno_siistemas_utn_frc.util.Constants.*;
 
 @Controller
 public class controllerdsi {
+
+	private LocalDate fechaDesde;
+	private LocalDate fechaHasta;
+
+	@Autowired
+	private PantallaGenerarReporte pantallaGenerarReporte;
 	
 	@GetMapping("/proyecto")
 	public String start() {
@@ -23,6 +33,8 @@ public class controllerdsi {
 	@GetMapping("/GenerarReporte")
 	public String habilitarVentana(Model model) {		
 		String enabled = "1";
+
+		model.addAttribute("fechaDesdeOriginal", LocalDate.now());
         model.addAttribute(ENABLED, enabled);
 		return GENERAR_REPORTE;
 	}
@@ -31,26 +43,44 @@ public class controllerdsi {
 	public String salir() {
 		return "redirect:";
 	}
-	
-	@PostMapping("/GenerarReporte")
-    public ModelAndView validarPeriodo(@RequestParam("fechaDesde") LocalDate fechaDesde,
-									   @RequestParam("fechaHasta") LocalDate fechaHasta,
-									   Model model) {
-		
-		ModelAndView modelAndView = new ModelAndView(GENERAR_REPORTE);
-		String enabled;
-		
-		if (fechaHasta.isBefore(fechaDesde)) {
-	        modelAndView.addObject("error", "La fecha hasta debe ser mayor que la fecha desde.");
-	        enabled = "1";
-	    } else {
-	    	enabled = "2";
-	    }	
-	    
+
+	@PostMapping("/tomarPrimerFecha")
+	public ModelAndView tomarPrimerFecha(@RequestParam("fechaDesde") LocalDate fechaDesde, Model model) {
+
+		ModelAndView modelAndView = new ModelAndView("generarreporte");
+		String enabled = "2";
+
+		this.fechaDesde = fechaDesde;
+		pantallaGenerarReporte.tomarSeleccionFechaDesde(fechaDesde);
+
+		modelAndView.addObject("fechaDesdeOriginal", this.fechaDesde);
 		modelAndView.addObject(ENABLED, enabled);
-		
-	    return modelAndView;
-    }
+
+		return modelAndView;
+	}
+
+	@PostMapping("/validarPeriodo")
+	public ModelAndView validarPeriodo(@RequestParam("fechaHasta") LocalDate fechaHasta, Model model) {
+
+		ModelAndView modelAndView = new ModelAndView("generarreporte");
+		String enabled = "2";
+
+		this.fechaHasta = fechaHasta;
+
+		if (this.fechaHasta.isBefore(this.fechaDesde)) {
+			modelAndView.addObject("error", "La fecha hasta debe ser mayor que la fecha desde.");
+			enabled = "2";
+		} else {
+			enabled = "3";
+			pantallaGenerarReporte.tomarSeleccionFechaHasta(fechaHasta);
+		}
+
+		modelAndView.addObject("fechaDesdeOriginal", this.fechaDesde);
+		modelAndView.addObject("fechaHastaOriginal", this.fechaHasta);
+		modelAndView.addObject(ENABLED, enabled);
+
+		return modelAndView;
+	}
 	
 	@PostMapping("/TomarSeleccionTipoResena")
 	public ModelAndView tomarSeleccionTipoResena(@RequestParam("resenas") String valorSelect) {
@@ -60,11 +90,14 @@ public class controllerdsi {
 		
 		if (valorSelect.compareToIgnoreCase("sommelier") != 0) {
 	        modelAndView.addObject("error2", "Por momentos solo podemos generar reseñas de tipo sommelier");
-	        enabled = "2";
+	        enabled = "3";
 	    } else {
-	    	enabled = "3";
-	    }			
-		
+	    	enabled = "4";
+			pantallaGenerarReporte.tomarSeleccionTipoReseña(valorSelect);
+	    }
+
+		modelAndView.addObject("fechaDesdeOriginal", this.fechaDesde);
+		modelAndView.addObject("fechaHastaOriginal", this.fechaHasta);
 		modelAndView.addObject(ENABLED, enabled);
 		
 		return modelAndView;
@@ -78,18 +111,25 @@ public class controllerdsi {
 		
 		if (valorSelect.compareToIgnoreCase("excel") != 0) {
 	        modelAndView.addObject("error3", "Por momentos solo podemos generar reportes en formato Excel");
-	        enabled = "3";
+	        enabled = "4";
 	    } else {
-	    	enabled = "4";
-	    }			
-		
+	    	enabled = "5";
+			pantallaGenerarReporte.tomarSeleccionFormasVisualizacion(valorSelect);
+	    }
+
+		modelAndView.addObject("fechaDesdeOriginal", this.fechaDesde);
+		modelAndView.addObject("fechaHastaOriginal", this.fechaHasta);
 		modelAndView.addObject(ENABLED, enabled);
 		
 		return modelAndView;
 	}
 	
 	@GetMapping("/TomarConfirmacionGeneracionReporte")
-	public String tomarConfirmacionGeneracionReporte() {	
+	public String tomarConfirmacionGeneracionReporte(@RequestParam(value = "valor", required = true, defaultValue = "true") boolean valor, Model model) {
+		ArrayList<Vino> lista =pantallaGenerarReporte.confirmarGeneracionReporte(valor);
+
+		System.out.println(lista);
+		model.addAttribute("lista", lista);
 		return "excel";
 	}
 }

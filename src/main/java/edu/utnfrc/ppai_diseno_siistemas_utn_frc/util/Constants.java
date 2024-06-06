@@ -4,4 +4,5 @@ public class Constants {
 
     public static final String GENERAR_REPORTE = "generarreporte";
     public static final String ENABLED = "enabled";
+
 }
