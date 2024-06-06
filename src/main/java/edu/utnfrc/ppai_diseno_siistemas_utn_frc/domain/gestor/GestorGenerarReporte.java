@@ -29,7 +29,7 @@ public class GestorGenerarReporte {
     private LocalDate fechaDesde;
     private LocalDate fechaHasta;
     private String formasVisualizacion;
-    private List<Bodega> bodega;
+    private List<Bodega> bodega = new ArrayList<>();
     private List<Float> promedio = new ArrayList<>();
     private List<Pais> pais = new ArrayList<>();
     private List<RegionVitivinicola> region = new ArrayList<>();
@@ -159,15 +159,18 @@ public class GestorGenerarReporte {
 
     public void generarExcel10MejoresVinos(List<Vino> vino) {
         Map<String, Object> mapita;
+        List<Vino> vinoList = new ArrayList<>();
         if (!vino.isEmpty()) {
-            for (int i = 0; vino.size() < 10; i++) {
+            for (int i = 0; vinoList.size() < 10; i++) {
                 Vino getVino = vino.get(i);
                 this.bodega.add(getVino.getBodega());
                 mapita = getVino.getRegionYpais();
                 this.region.add((RegionVitivinicola) mapita.get("region"));
                 this.pais.add((Pais) mapita.get("pais"));
                 this.varietal.addAll(getVino.getVarietal());
+                vinoList.add(getVino);
             }
+            //generar el excel (Todos los datos que tiene el gestor).
         }  else {
             log.error("List vinos is empty - {}", vino);
         }
