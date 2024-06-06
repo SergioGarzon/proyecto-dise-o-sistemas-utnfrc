@@ -15,16 +15,11 @@ public class Provincia {
 
     private String nombre;
     private List<RegionVitivinicola> regiones;
+    private Pais pais;
 
-    public void contarRegiones() {
+    public void contarRegiones() {}
 
-    }
+    public Pais getPais() {return pais;}
 
-    public void getPais() {
-
-    }
-
-    public void mostrarRegiones() {
-
-    }
+    public void mostrarRegiones() {}
 }

@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,23 +22,16 @@ public class Bodega {
     private Date periodoActualizacion;
     private RegionVitivinicola region;
 
-    /*
-    * No se agregan métodos de seteo porque hace todo @builder y @Data
-    */
+    public void contarReseñas() {}
 
-    public void contarReseñas() {
+    public String getNombre() {return nombre;}
+
+    public Map<String, Object> getRegionYPais() {
+        Map<String, Object> mapita = new HashMap<>();
+        mapita.put("Region", region);
+        mapita.put("Pais", region.getPais());
+        return mapita;
     }
 
-    public String getNombre() {
-        //No le gusta para nada jajajajaja xd
-        return nombre;
-    }
-
-    public void getRegionYPais() {
-        // TODO document why this method is empty
-    }
-
-    public void mostrarTodosvinos() {
-        // TODO document why this method is empty
-    }
+    public void mostrarTodosvinos() {}
 }
