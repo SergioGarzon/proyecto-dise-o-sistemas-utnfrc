@@ -136,7 +136,7 @@ public class MakeVinos {
     }
 
     private static String getCadena() {
-        //Genera cadenas aleatorias de tamaño 15 para mappearStrings randoms.
+        //Genera cadenas aleatorias de tamaño 15 para mappear Strings randoms.
         int longitud = 15;
         String cadenagrande = "abcdefghijklmnñopqrstuvwxyzABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
         StringBuilder cadena = new StringBuilder();

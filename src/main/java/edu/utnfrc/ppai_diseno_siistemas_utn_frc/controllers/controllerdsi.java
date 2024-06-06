@@ -3,6 +3,7 @@ package edu.utnfrc.ppai_diseno_siistemas_utn_frc.controllers;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
 import edu.utnfrc.ppai_diseno_siistemas_utn_frc.domain.boundary.PantallaGenerarReporte;
 import edu.utnfrc.ppai_diseno_siistemas_utn_frc.domain.entidad.Vino;
@@ -63,7 +64,7 @@ public class controllerdsi {
 	public ModelAndView validarPeriodo(@RequestParam("fechaHasta") LocalDate fechaHasta, Model model) {
 
 		ModelAndView modelAndView = new ModelAndView("generarreporte");
-		String enabled = "2";
+		String enabled;
 
 		this.fechaHasta = fechaHasta;
 
@@ -126,7 +127,7 @@ public class controllerdsi {
 	
 	@GetMapping("/TomarConfirmacionGeneracionReporte")
 	public String tomarConfirmacionGeneracionReporte(@RequestParam(value = "valor", required = true, defaultValue = "true") boolean valor, Model model) {
-		ArrayList<Vino> lista =pantallaGenerarReporte.confirmarGeneracionReporte(valor);
+		List<Vino> lista =pantallaGenerarReporte.confirmarGeneracionReporte(valor);
 
 		System.out.println(lista);
 		model.addAttribute("lista", lista);

@@ -11,10 +11,12 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Map;
 
 import static edu.utnfrc.ppai_diseno_siistemas_utn_frc.util.MakeVinos.getResult;
 
@@ -66,7 +68,6 @@ public class GestorGenerarReporte {
     }
 
     public void generarRankingDeVinos(PantallaGenerarReporte pantallaGenerarReporte) {
-        //Inicia todo.
         this.pantallaGenerarReporte = pantallaGenerarReporte;
         this.pantallaGenerarReporte.pedirSeleccionFechaDesde();
         this.pantallaGenerarReporte.pedirSeleccionFechaHasta();
@@ -113,11 +114,11 @@ public class GestorGenerarReporte {
     }
 
     public void solicitarConfirmacionGeneracionReporte() {
-        this.pantallaGenerarReporte.solicitarConfirmacionGeneracionReporte();
+        pantallaGenerarReporte.solicitarConfirmacionGeneracionReporte();
     }
 
-    public ArrayList<Vino> tomarConfirmacionGeneracionReporte(boolean valor) {
-        ArrayList<Vino> lista = null;
+    public List<Vino> tomarConfirmacionGeneracionReporte(boolean valor) {
+        List<Vino> lista = null;
         if (valor) {
             log.info("Confirmacion = {}", true);
             lista = buscarVinosConReseñaEnPeriodo();
@@ -125,12 +126,13 @@ public class GestorGenerarReporte {
 
         return lista;
     }
-    public ArrayList<Vino> buscarVinosConReseñaEnPeriodo() {
+    public List<Vino> buscarVinosConReseñaEnPeriodo() {
 
         //List de vinos (pre cargados)
         List<Vino> vinoList = getResult();
 
         this.vino.addAll(vinoList.stream().map(vino1 -> {
+
             //Obtenemos reseñas en Periodo.
             List<Reseña> reseñasEnPeriodo= vino1.tieneReseñaEnPeriodo(this.fechaDesde, this.fechaHasta);
 
@@ -152,17 +154,15 @@ public class GestorGenerarReporte {
         }).filter(Objects::nonNull).toList());
 
         //invocamos al método calcular ranking.
-        ArrayList<Vino> lista = this.calcularRanking(this.vino);
-        return lista;
+        return this.calcularRanking(this.vino);
     }
 
-    public ArrayList<Vino> calcularRanking(List<Vino> vino) {
+    public List<Vino> calcularRanking(List<Vino> vino) {
         vino.sort(Comparator.comparing(GestorGenerarReporte::apply).reversed());
-        ArrayList<Vino> lista = this.generarExcel10MejoresVinos(vino);
-        return lista;
+        return this.generarExcel10MejoresVinos(vino);
     }
 
-    public ArrayList<Vino> generarExcel10MejoresVinos(List<Vino> vino) {
+    public List<Vino> generarExcel10MejoresVinos(List<Vino> vino) {
         Map<String, Object> mapita;
         ArrayList<Vino> vinoList = new ArrayList<>();
         if (!vino.isEmpty()) {
@@ -175,12 +175,15 @@ public class GestorGenerarReporte {
                 this.varietal.addAll(getVino.getVarietal());
                 vinoList.add(getVino);
             }
-
-            // System.out.println(GestorGenerarReporte.this.toString());
         }  else {
             log.error("List vinos is empty - {}", vino);
         }
 
+        this.informarGeneracionExitosa();
         return vinoList;
+    }
+
+    public void informarGeneracionExitosa() {
+        pantallaGenerarReporte.informarGeneracionExitosa();
     }
 }

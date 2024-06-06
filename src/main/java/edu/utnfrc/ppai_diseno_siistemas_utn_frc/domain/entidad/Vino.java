@@ -14,7 +14,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -35,19 +34,15 @@ public class Vino {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public void calcularRanking() {
-
     }
 
     public void compararEtiqueta() {
-
     }
 
     public void esDeBodega() {
-
     }
 
     public void esDeRegionVitivinicola() {
-
     }
 
     public Bodega getBodega() {
@@ -63,7 +58,7 @@ public class Vino {
     }
 
     public List<Reseña> tieneReseñaEnPeriodo(LocalDate fechaDesde, LocalDate fechaHasta) {
-       return this.reseña.stream().map(reseña1 -> {
+        return this.reseña.stream().map(reseña1 -> {
             if (Boolean.FALSE.equals(reseña1.esDePeriodo(fechaDesde, fechaHasta))) {
                 log.error("No es una reseña que esté en periodo");
                 return null;

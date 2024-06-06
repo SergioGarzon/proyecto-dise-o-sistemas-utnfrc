@@ -6,17 +6,18 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
-import java.util.ArrayList;
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @Builder
 @Component
 @NoArgsConstructor
 @AllArgsConstructor
+@Slf4j
 public class PantallaGenerarReporte {
 
     private Boolean btnConfirmacion;
@@ -79,11 +80,12 @@ public class PantallaGenerarReporte {
 
     public void solicitarConfirmacionGeneracionReporte() {}
 
-    public ArrayList<Vino> confirmarGeneracionReporte(boolean valor) {
+    public List<Vino> confirmarGeneracionReporte(boolean valor) {
         this.btnConfirmacion = valor;
-        ArrayList<Vino> lista = this.gestorGenerarReporte.tomarConfirmacionGeneracionReporte(this.btnConfirmacion);
-        return lista;
+        return this.gestorGenerarReporte.tomarConfirmacionGeneracionReporte(this.btnConfirmacion);
     }
 
-    public void informarGeneracionExitosa() {}
+    public void informarGeneracionExitosa() {
+        log.info("Generacion Exitosa");
+    }
 }
