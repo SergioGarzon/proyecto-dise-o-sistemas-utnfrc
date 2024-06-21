@@ -1,9 +1,13 @@
 package edu.utnfrc.ppai_diseno_siistemas_utn_frc.domain.gestor;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import edu.utnfrc.ppai_diseno_siistemas_utn_frc.controllers.controllerdsi;
-import edu.utnfrc.ppai_diseno_siistemas_utn_frc.domain.boundary.PantallaGenerarReporte;
-import edu.utnfrc.ppai_diseno_siistemas_utn_frc.domain.entidad.*;
+import edu.utnfrc.ppai_diseno_siistemas_utn_frc.Alerts.ErrorAlert;
+import edu.utnfrc.ppai_diseno_siistemas_utn_frc.Alerts.InformationAlert;
+import edu.utnfrc.ppai_diseno_siistemas_utn_frc.domain.boundary.PantallaFx;
+import edu.utnfrc.ppai_diseno_siistemas_utn_frc.domain.entidad.Bodega;
+import edu.utnfrc.ppai_diseno_siistemas_utn_frc.domain.entidad.Pais;
+import edu.utnfrc.ppai_diseno_siistemas_utn_frc.domain.entidad.Reseña;
+import edu.utnfrc.ppai_diseno_siistemas_utn_frc.domain.entidad.Vino;
+import edu.utnfrc.ppai_diseno_siistemas_utn_frc.domain.entidad.RegionVitivinicola;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,12 +17,10 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
-import java.util.Map;
 
-import static edu.utnfrc.ppai_diseno_siistemas_utn_frc.util.MakeVinos.getResult;
+import static edu.utnfrc.ppai_diseno_siistemas_utn_frc.util.Constants.EXCEL;
+import static edu.utnfrc.ppai_diseno_siistemas_utn_frc.util.Constants.SOMMELIER;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -27,6 +29,8 @@ import static edu.utnfrc.ppai_diseno_siistemas_utn_frc.util.MakeVinos.getResult;
 @Slf4j
 @Builder
 public class GestorGenerarReporte {
+
+    PantallaFx pantallaFx;
 
     private LocalDate fechaDesde;
     private LocalDate fechaHasta;
@@ -39,93 +43,75 @@ public class GestorGenerarReporte {
     private List<String> varietal = new ArrayList<>();
     private List<Vino> vino = new ArrayList<>();
     private String tipoReseña;
-    private static PantallaGenerarReporte pantallaGenerarReporte = new PantallaGenerarReporte();
 
+    public void generarRankingDeVinos(PantallaFx pantallaGenerarReporte) {
+        this.pantallaFx = pantallaGenerarReporte;
+        this.pantallaFx.pedirSeleccionFechaDesde();
+        this.pantallaFx.pedirSeleccionFechaHasta();
+    }
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
-    private static final controllerdsi controller = new controllerdsi();
-
-    public GestorGenerarReporte(LocalDate fechaDesde, LocalDate fechaHasta, List<Bodega> bodega,
-                                String formasVisualizacion, List<Float> promedio, List<Pais> pais,
-                                List<RegionVitivinicola> region, List<Reseña> reseña, List<String> varietal,
-                                List<Vino> vino, String tipoReseña, PantallaGenerarReporte pantallaGenerarReporte) {
+    public void tomarSeleccionFechaDesdeFechaHasta(LocalDate fechaDesde, LocalDate fechaHasta) {
         this.fechaDesde = fechaDesde;
         this.fechaHasta = fechaHasta;
-        this.bodega = bodega;
-        this.formasVisualizacion = formasVisualizacion;
-        this.promedio = promedio;
-        this.pais = pais;
-        this.region = region;
-        this.reseña = reseña;
-        this.varietal = varietal;
-        this.vino = vino;
-        this.tipoReseña = tipoReseña;
-        this.pantallaGenerarReporte = pantallaGenerarReporte;
     }
 
-    private static Float apply(Vino vino1) {
-        return vino1.getReseña().get(0).getPuntaje();
-    }
-
-    public void generarRankingDeVinos(PantallaGenerarReporte pantallaGenerarReporte) {
-        this.pantallaGenerarReporte = pantallaGenerarReporte;
-        this.pantallaGenerarReporte.pedirSeleccionFechaDesde();
-        this.pantallaGenerarReporte.pedirSeleccionFechaHasta();
-    }
-
-    public void tomarSeleccionFechaDesde(LocalDate fechaDesde) {
-        this.fechaDesde = fechaDesde;
-    }
-
-    public void tomarSeleccionFechaHasta(LocalDate fechaHasta) {
-        this.fechaHasta = fechaHasta;
-        this.validarPeriodo(this.fechaDesde, this.fechaHasta);
-    }
-
-    public void validarPeriodo(LocalDate fechaDesde, LocalDate fechaHasta) {
-        if (fechaHasta.isBefore(fechaDesde)) {
-            log.error("Periodo de fechas no Validas " +
-                    "fecha desde: {} - fecha hasta: {}", fechaDesde, fechaHasta);
-        } else {
-            log.info("Periodo de fecha validas! " +
-                    "fecha desde: {} - fecha hasta: {}", fechaDesde, fechaHasta);
-            pedirSeleccionTipoReseña();
+    public void validarPeriodo() {
+        if (fechaDesde != null && fechaHasta != null) {
+            if(fechaHasta.isBefore(fechaDesde)) {
+                ErrorAlert.mostrarError("Periodo de fechas no Validas - fecha desde es mayor que fecha hasta.");
+                log.error("Periodo de fechas no Validas " + "fecha desde: {} - fecha hasta: {}", fechaDesde, fechaHasta);
+            } else {
+                InformationAlert.information("Periodo de fecha validas!");
+                log.info("Periodo de fecha validas! " + "fecha desde: {} - fecha hasta: {}", fechaDesde, fechaHasta);
+                this.pedirSeleccionTipoReseña();
+            }
+        }  else {
+            ErrorAlert.mostrarError("Fechas Desde y Fecha hasta is null");
         }
     }
 
     public void pedirSeleccionTipoReseña() {
-        pantallaGenerarReporte.pedirSeleccionTipoReseña();
+        this.pantallaFx.pedirSeleccionTipoReseña();
     }
+
 
     public void tomarSeleccionTipoReseña(String tipoReseña) {
-        this.tipoReseña = tipoReseña;
+        if (tipoReseña != null && tipoReseña.equals(SOMMELIER)) {
+            InformationAlert.information("Tipo de reseña seleccionada - ".concat(tipoReseña));
+            this.tipoReseña = tipoReseña;
+            this.mostrarFormasVisualizacion();
+        } else {
+            ErrorAlert.mostrarError("Disculpe, por el momento solo procesamos reseña de tipo ".concat(SOMMELIER));
+        }
         log.info("Tipo de reseña seleccionada - {}", tipoReseña);
-        this.mostrarFormasVisualizacion();
     }
 
+
     public void mostrarFormasVisualizacion() {
-        this.pantallaGenerarReporte.mostrarFormasVisualizacion();
+        this.pantallaFx.mostrarYPedirFormasVisualizacion();
     }
 
     public void tomarSeleccionFormasVisualizacion(String formasVisualizacion) {
-        this.formasVisualizacion = formasVisualizacion;
+        if (formasVisualizacion != null && formasVisualizacion.equals(EXCEL)) {
+            InformationAlert.information("Forma de visualizacion seleccionada - ".concat(formasVisualizacion));
+            this.formasVisualizacion = formasVisualizacion;
+            this.solicitarConfirmacionGeneracionReporte();
+        } else {
+            ErrorAlert.mostrarError("Disculpe, por el momento solo procesamos visualizacion en ".concat(EXCEL));
+        }
         log.info("Forma de visualizacion seleccionada - {}", formasVisualizacion);
-        this.solicitarConfirmacionGeneracionReporte();
     }
 
     public void solicitarConfirmacionGeneracionReporte() {
-        pantallaGenerarReporte.solicitarConfirmacionGeneracionReporte();
+        this.pantallaFx.solicitarConfirmacionGeneracionReporte();
     }
 
-    public List<Vino> tomarConfirmacionGeneracionReporte(boolean valor) {
-        List<Vino> lista = null;
-        if (valor) {
-            log.info("Confirmacion = {}", true);
-            lista = buscarVinosConReseñaEnPeriodo();
-        }
 
-        return lista;
+    public void tomarConfirmacionGeneracionReporte(boolean confirmacion) {
+        log.info("Boolean = {}", confirmacion);
     }
+
+       /*
     public List<Vino> buscarVinosConReseñaEnPeriodo() {
 
         //List de vinos (pre cargados)
@@ -185,5 +171,5 @@ public class GestorGenerarReporte {
 
     public void informarGeneracionExitosa() {
         pantallaGenerarReporte.informarGeneracionExitosa();
-    }
+    } */
 }
