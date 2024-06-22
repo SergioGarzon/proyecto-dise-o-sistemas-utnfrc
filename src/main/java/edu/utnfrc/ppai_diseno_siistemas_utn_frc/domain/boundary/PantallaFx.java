@@ -1,6 +1,7 @@
 package edu.utnfrc.ppai_diseno_siistemas_utn_frc.domain.boundary;
 
 import edu.utnfrc.ppai_diseno_siistemas_utn_frc.Alerts.ConfirmationAlert;
+import edu.utnfrc.ppai_diseno_siistemas_utn_frc.Alerts.InformationAlert;
 import edu.utnfrc.ppai_diseno_siistemas_utn_frc.PpaiDisenoSiistemasUtnFrcApplication;
 import edu.utnfrc.ppai_diseno_siistemas_utn_frc.domain.gestor.GestorGenerarReporte;
 import javafx.event.ActionEvent;
@@ -156,5 +157,10 @@ public class PantallaFx implements Initializable {
     public void tomarConfirmacionGeneracionReporte(ActionEvent event) {
         boolean confirmacion = ConfirmationAlert.confirmation("Desea confirmar?");
         this.gestorGenerarReporte.tomarConfirmacionGeneracionReporte(confirmacion);
+    }
+
+    public void informarGeneracionExitosa() {
+        InformationAlert.information("Archivo generado con éxito!!! - Hasta luego!");
+        this.gestorGenerarReporte.finCU();
     }
 }
