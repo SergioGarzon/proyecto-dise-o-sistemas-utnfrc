@@ -1,9 +1,10 @@
 package edu.utnfrc.ppai_diseno_siistemas_utn_frc.domain.entidad;
 
-import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.AllArgsConstructor;
 
 import java.time.LocalDate;
 
@@ -17,15 +18,16 @@ public class Reseña {
     private Boolean esPremium;
     private LocalDate fechaReseña;
     private Float puntaje;
+    @NonNull
     private Vino vino;
     private Boolean sosDeSomelier;
 
-    public Boolean esDePeriodo(LocalDate fechaDesde, LocalDate fechaHasta) {
+    public boolean esDePeriodo(LocalDate fechaDesde, LocalDate fechaHasta) {
         return ((fechaReseña.isEqual(fechaDesde) || fechaReseña.isAfter(fechaDesde)) && fechaReseña.isBefore(fechaHasta));
     }
 
-    public void esPremium() {
-
+    public boolean esPremium() {
+        return esPremium;
     }
 
     public void sosDeEnofilo() {

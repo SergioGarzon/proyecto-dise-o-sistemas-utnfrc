@@ -13,14 +13,8 @@ public class RegionVitivinicola {
 
     private String descripcion;
     private String nombre;
-    private Provincia provincia;
 
     public void conocerBodega() {}
 
     public void contarBodegas() {}
-
-
-    public Pais getPais() {
-        return this.provincia.getPais();
-    }
 }
