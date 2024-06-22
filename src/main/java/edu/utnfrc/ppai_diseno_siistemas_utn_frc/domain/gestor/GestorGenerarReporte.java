@@ -144,7 +144,7 @@ public class GestorGenerarReporte {
         for (Vino vino : vinoList) {
             row = sheet.createRow(initRow);
             row.createCell(0).setCellValue(vino.getNombre());
-            row.createCell(1).setCellValue(String.format("%.2f", mapProm.get(vino)));
+            row.createCell(1).setCellValue(String.format("%.2f", vino.calcularPromedio()));
             row.createCell(2).setCellValue(String.format("%.2f", vino.getNotaDeCataBodega()));
             row.createCell(3).setCellValue(vino.getPrecioArs().toString());
             row.createCell(4).setCellValue(vino.getBodega().getNombre());
