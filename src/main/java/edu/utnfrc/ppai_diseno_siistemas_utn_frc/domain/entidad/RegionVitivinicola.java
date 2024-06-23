@@ -14,7 +14,11 @@ public class RegionVitivinicola {
     private String descripcion;
     private String nombre;
 
-    public void conocerBodega() {}
+    public void conocerBodega() {
 
-    public void contarBodegas() {}
+    }
+
+    public void contarBodegas() {
+
+    }
 }

@@ -17,24 +17,21 @@ public class Reseña {
     private String comentario;
     private Boolean esPremium;
     private LocalDate fechaReseña;
-    private Float puntaje;
+    private int puntaje;
     @NonNull
     private Vino vino;
-    private Boolean sosDeSomelier;
 
     public boolean esDePeriodo(LocalDate fechaDesde, LocalDate fechaHasta) {
         return ((fechaReseña.isEqual(fechaDesde) || fechaReseña.isAfter(fechaDesde)) && fechaReseña.isBefore(fechaHasta));
     }
 
-    public boolean esPremium() {
-        return esPremium;
+    public void esPremium() {
     }
 
     public void sosDeEnofilo() {
-
     }
 
-    public Boolean sosDeSomelier() {
-        return this.sosDeSomelier;
+    public boolean sosDeSomellier() {
+        return this.esPremium;
     }
 }
