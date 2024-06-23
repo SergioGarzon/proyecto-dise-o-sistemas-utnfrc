@@ -3,6 +3,7 @@ package edu.utnfrc.ppai_diseno_siistemas_utn_frc.domain.gestor;
 import edu.utnfrc.ppai_diseno_siistemas_utn_frc.Alerts.ErrorAlert;
 import edu.utnfrc.ppai_diseno_siistemas_utn_frc.domain.boundary.PantallaFx;
 import edu.utnfrc.ppai_diseno_siistemas_utn_frc.domain.entidad.Pais;
+import edu.utnfrc.ppai_diseno_siistemas_utn_frc.domain.entidad.Varietal;
 import edu.utnfrc.ppai_diseno_siistemas_utn_frc.domain.entidad.Vino;
 import edu.utnfrc.ppai_diseno_siistemas_utn_frc.domain.entidad.RegionVitivinicola;
 import javafx.event.ActionEvent;
@@ -21,10 +22,8 @@ import org.springframework.stereotype.Service;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static edu.utnfrc.ppai_diseno_siistemas_utn_frc.util.Constants.EXCEL;
 import static edu.utnfrc.ppai_diseno_siistemas_utn_frc.util.Constants.SOMMELIER;
@@ -47,7 +46,7 @@ public class GestorGenerarReporte {
     private List<RegionVitivinicola> region = new ArrayList<>();
     private List<String> varietal = new ArrayList<>();
     private List<Vino> vino = new ArrayList<>();
-    private Map<Vino, Float> mapProm = new HashMap<>();
+    private Map<String, Double> mapProm = new HashMap<>();
     private String tipoReseña;
 
     public void generarRankingDeVinos(PantallaFx pantallaGenerarReporte) {
@@ -63,14 +62,14 @@ public class GestorGenerarReporte {
 
     public void validarPeriodo() {
         if (fechaDesde != null && fechaHasta != null) {
-            if(fechaHasta.isBefore(fechaDesde)) {
+            if (fechaHasta.isBefore(fechaDesde)) {
                 ErrorAlert.mostrarError("Periodo de fechas no Validas - fecha desde es mayor que fecha hasta.");
                 log.error("Periodo de fechas no Validas " + "fecha desde: {} - fecha hasta: {}", fechaDesde, fechaHasta);
             } else {
                 log.info("Periodo de fecha validas! " + "fecha desde: {} - fecha hasta: {}", fechaDesde, fechaHasta);
                 this.pedirSeleccionTipoReseña();
             }
-        }  else {
+        } else {
             ErrorAlert.mostrarError("Fechas Desde y Fecha hasta is null");
         }
     }
@@ -120,14 +119,26 @@ public class GestorGenerarReporte {
     }
 
     public void buscarVinosConReseñaEnPeriodo() {
-
         List<Vino> vinoList = getResult();
-        //MAPEAR TODA LOGICA DEL PASO 11.
-
-        this.generarExcel(vinoList);
+        this.vino.addAll(vinoList.stream()
+                .filter(vino -> vino.getReseñaEnPeriodoRealizaPorSommelier(this.fechaDesde, this.fechaHasta))
+                .toList());
+        if (this.vino.isEmpty()) {
+            ErrorAlert.mostrarError("No vinos con Reseñas de sommelier en el periodo ingresado");
+        }
+        this.calcularPromedioYOrdenarSegunCalificacion(this.vino);
     }
 
-    public void generarExcel(List<Vino> vinoList) {
+    public void calcularPromedioYOrdenarSegunCalificacion(List<Vino> vinosEnPeriodosDeSommelier) {
+        this.mapProm = vinosEnPeriodosDeSommelier.stream()
+                .collect(Collectors.toMap(Vino::getNombre, Vino::calcularPuntajeSommelier));
+
+        vinosEnPeriodosDeSommelier.sort(Comparator.comparingDouble(keyVino -> -mapProm.getOrDefault(keyVino.getNombre(), 0.0)));
+
+        this.generarExcel(vinosEnPeriodosDeSommelier, this.mapProm);
+    }
+
+    public void generarExcel(List<Vino> vinoList, Map<String, Double> promedios) {
         String[] columns = {"Nombre", "Calificacion Sommelier", "Calificacion General", "Precio", "Bodega"
                 , "Varietal", "Región", "Pais"};
 
@@ -141,16 +152,17 @@ public class GestorGenerarReporte {
         }
 
         int initRow = 1;
-        for (Vino vino : vinoList) {
+        for (int i = 0; i < 10; i++) {
+            Vino vino = vinoList.get(i);
             row = sheet.createRow(initRow);
             row.createCell(0).setCellValue(vino.getNombre());
-            row.createCell(1).setCellValue(String.format("%.2f", vino.calcularPromedio()));
-            row.createCell(2).setCellValue(String.format("%.2f", vino.getNotaDeCataBodega()));
+            row.createCell(1).setCellValue(String.format("%.2f", promedios.get(vino.getNombre())));
+            row.createCell(2).setCellValue(String.format("%.2f", vino.calcularPuntajeGeneral()));
             row.createCell(3).setCellValue(vino.getPrecioArs().toString());
             row.createCell(4).setCellValue(vino.getBodega().getNombre());
-            row.createCell(5).setCellValue(vino.getVarietal().get(0));
+            row.createCell(5).setCellValue(vino.getVarietal().stream().map(Varietal::getDescripcion).collect(Collectors.joining()));
             row.createCell(6).setCellValue(vino.getBodega().getRegion().getNombre());
-            row.createCell(7).setCellValue("PaisxD");
+            row.createCell(7).setCellValue(vino.getPais().getNombre());
 
             initRow++;
         }
@@ -164,6 +176,8 @@ public class GestorGenerarReporte {
         } catch (IOException e) {
             ErrorAlert.mostrarError("Errorrrrrrrrrr Critico xd");
             throw new RuntimeException(e);
+        } catch (Exception e) {
+            throw new RuntimeException("Acá no paso nada xd", e);
         }
 
     }

@@ -1,6 +1,5 @@
 package edu.utnfrc.ppai_diseno_siistemas_utn_frc.domain.entidad;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.NoArgsConstructor;
 import lombok.Builder;
@@ -11,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
 
 @AllArgsConstructor
@@ -21,16 +19,20 @@ import java.util.List;
 @Slf4j
 public class Vino {
 
+    private String nombre;
+    @NonNull
+    private List<Varietal> varietal;
     private String añada;
     private String imagenEtiqueta;
-    private String nombre;
-    private float notaDeCataBodega;
     private BigDecimal precioArs;
     @NonNull
     private Bodega bodega;
-    private List<Reseña> reseña;
-    @NonNull
-    private Varietal varietal;
+    private RegionVitivinicola regionVinicola;
+    private Provincia provincia;
+    private Pais pais;
+    private String notaDeCataBodega;
+    private String mridajes;
+    private List<Reseña> reseñas;
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -46,28 +48,41 @@ public class Vino {
     public void esDeRegionVitivinicola() {
     }
 
+    public Pais getPais() {
+        return this.pais;
+    }
+
+    public RegionVitivinicola getRegion() {
+        return this.regionVinicola;
+    }
+
     public Bodega getBodega() {
         return bodega;
     }
 
-    public List<String> getVarietal() {
-        return Collections.singletonList(varietal.getDescripcion());
+    public List<Varietal> getVarietal() {
+        return this.varietal;
     }
 
     public boolean getReseñaEnPeriodoRealizaPorSommelier(LocalDate fechaDesde, LocalDate fechaHasta) {
-        for (Reseña reseña : this.reseña) {
-            if (reseña.esDePeriodo(fechaDesde, fechaHasta) && reseña.esPremium()) {
-                return true;
-            }
-        }
-        return false;
+        return this.reseñas.stream().anyMatch(reseña ->
+                reseña.esDePeriodo(fechaDesde, fechaHasta)
+                        && reseña.sosDeSomellier()
+        );
     }
 
-    public float calcularPromedio() {
-        float prom = 0F;
-        for (Reseña reseña1 : this.reseña) {
-            prom += reseña1.getPuntaje();
-        }
-        return (prom / this.reseña.size());
+    public double calcularPuntajeSommelier() {
+        return this.reseñas.stream()
+                .filter(Reseña::sosDeSomellier)
+                .mapToDouble(Reseña::getPuntaje)
+                .average()
+                .orElse(0.0);
+    }
+
+    public double calcularPuntajeGeneral() {
+        return this.reseñas.stream()
+                .mapToDouble(Reseña::getPuntaje)
+                .average()
+                .orElse(0.0);
     }
 }

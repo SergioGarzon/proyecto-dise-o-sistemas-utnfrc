@@ -7,6 +7,7 @@ import lombok.NonNull;
 import lombok.AllArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,28 +15,26 @@ import java.util.Date;
 @Data
 public class Bodega {
 
-    private String coordenadasUbicacion;
+    private List<Integer> coordenadasUbicacion;
     private String descripcion;
     private String historia;
     private String nombre;
     private Date periodoActualizacion;
     @NonNull
     private RegionVitivinicola region;
+    private NovedadEvento novedad;
 
-    public void contarReseñas() {}
+    public void contarReseñas() {
+
+    }
 
     public String getNombre() {return this.nombre;}
-
-    /*
-    public Map<String, Object> getRegionYPais() {
-        Map<String, Object> mapita = new HashMap<>();
-        mapita.put("Region", region);
-        return mapita;
-    }*/
 
     public RegionVitivinicola getRegion() {
         return this.region;
     }
 
-    public void mostrarTodosvinos() {}
+    public void mostrarTodosvinos() {
+
+    }
 }
