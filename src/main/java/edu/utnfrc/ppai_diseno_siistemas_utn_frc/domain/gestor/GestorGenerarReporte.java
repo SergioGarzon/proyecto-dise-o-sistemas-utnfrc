@@ -131,7 +131,7 @@ public class GestorGenerarReporte {
 
     public void calcularPromedioYOrdenarSegunCalificacion(List<Vino> vinosEnPeriodosDeSommelier) {
         this.mapProm = vinosEnPeriodosDeSommelier.stream()
-                .collect(Collectors.toMap(Vino::getNombre, Vino::calcularPuntajeSommelier));
+                .collect(Collectors.toMap(Vino::getNombre, Vino::getPuntajeSommelier));
 
         vinosEnPeriodosDeSommelier.sort(Comparator.comparingDouble(keyVino -> -mapProm.getOrDefault(keyVino.getNombre(), 0.0)));
 
@@ -157,12 +157,12 @@ public class GestorGenerarReporte {
             row = sheet.createRow(initRow);
             row.createCell(0).setCellValue(vino.getNombre());
             row.createCell(1).setCellValue(String.format("%.2f", promedios.get(vino.getNombre())));
-            row.createCell(2).setCellValue(String.format("%.2f", vino.calcularPuntajeGeneral()));
+            row.createCell(2).setCellValue(String.format("%.2f", vino.getPuntajeGeneral()));
             row.createCell(3).setCellValue(vino.getPrecioArs().toString());
             row.createCell(4).setCellValue(vino.getBodega().getNombre());
             row.createCell(5).setCellValue(vino.getVarietal().stream().map(Varietal::getDescripcion).collect(Collectors.joining()));
             row.createCell(6).setCellValue(vino.getBodega().getRegion().getNombre());
-            row.createCell(7).setCellValue(vino.getPais().getNombre());
+            row.createCell(7).setCellValue(vino.getBodega().getPais().getNombre());
 
             initRow++;
         }

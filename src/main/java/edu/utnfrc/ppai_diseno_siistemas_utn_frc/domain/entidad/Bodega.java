@@ -34,6 +34,10 @@ public class Bodega {
         return this.region;
     }
 
+    public Pais getPais() {
+        return region.getPais();
+    }
+
     public void mostrarTodosvinos() {
 
     }

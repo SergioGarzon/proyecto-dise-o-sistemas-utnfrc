@@ -30,6 +30,16 @@ public class MakeVinos {
         //Creamos el Pais.
         Pais pais = Pais.builder().nombre("Argentina").provincia(provincias).build();
 
+        //Inyectamos la dependencia.
+        for(RegionVitivinicola regionVitivinicola : regionVitivinicolas) {
+            regionVitivinicola.setProvincia(provincias.get(numeroAleatorioEnRango(0,2)));
+        }
+
+        //Inyectamos la dependencia.
+        for(Provincia provincia : provincias) {
+            provincia.setPais(pais);
+        }
+
         Bodega bodega = Bodega.builder()
                 .coordenadasUbicacion(Collections.singletonList(getCadena().length()))
                 .descripcion(getCadena())

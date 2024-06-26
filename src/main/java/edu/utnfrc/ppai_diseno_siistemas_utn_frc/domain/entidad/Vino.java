@@ -71,7 +71,7 @@ public class Vino {
         );
     }
 
-    public double calcularPuntajeSommelier() {
+    public double getPuntajeSommelier() {
         return this.reseñas.stream()
                 .filter(Reseña::sosDeSomellier)
                 .mapToDouble(Reseña::getPuntaje)
@@ -79,7 +79,7 @@ public class Vino {
                 .orElse(0.0);
     }
 
-    public double calcularPuntajeGeneral() {
+    public double getPuntajeGeneral() {
         return this.reseñas.stream()
                 .mapToDouble(Reseña::getPuntaje)
                 .average()
